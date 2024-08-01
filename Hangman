@@ -1,0 +1,234 @@
+import java.util.Scanner;
+import java.util.Random;
+import java.io.*;
+import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class MyProgram
+{
+    public static void main(String[] args)
+    {
+        Random rand = new Random();
+        // A list of words the computer can choose from
+        String[] words = {"dog", "cat", "boy", "bye", "hey"};
+        
+        // Variables to switch to the next screens
+        boolean intro = true;
+        boolean game = false;
+        boolean victory_end = false;
+        boolean losing_end = false;
+        boolean ending = false;
+        
+        // Fail counter that will represent what image should be shown after each guess
+        int fails = 0;
+        
+        // The beginning sequence that immediatley runs
+        INTRO:
+        while (intro == true) {
+            Scanner input = new Scanner(System.in);
+            // Beginning screen
+            System.out.println("\t\tHANGMAN");
+            
+            System.out.println("Type 'rules' in order to learn how to play!");
+            System.out.println("\t    Ready to play? \n\t\t y / n");
+            // Sets up which screen will be displayed next
+            String nextScreen = input.nextLine();
+            // The rules screen
+            if (nextScreen.equals("rules")) {
+                System.out.println("Welcome to Hangman!");
+                System.out.println("In this game, your task is to find out the secret word!");
+                System.out.println("You do this by guessing what letters are in the word.");
+                System.out.println("If you're right, then the computer will insert the letter into the designated blank!");
+                System.out.println("But, if you're wrong, then the computer will add one body part to the hanging man");
+                System.out.println("Once the body is completed, you lose the game!");
+                System.out.println("But, if you guess the word before the body is finished, you win!");
+                
+                // Will return the player to the intro screen when ready
+                System.out.println("\nType 'return' when you're ready to go back to the main menu");
+                String back = input.nextLine();
+                // If the player types return, then they return to the intro
+                if (back.equals("return")) {
+                    continue INTRO;
+                }
+                // Asks for a new command if "return" is not typed
+                else {
+                    System.out.println("Invalid command! Please try again!");
+                }
+            }
+            // Looks to see if the player is ready to play
+            // Moves them to the next screen
+            else if (nextScreen.equals("y")) {
+                intro = false;
+                game = true;
+            }
+            // Has them input another command until ready to play or see the rules
+            else if (nextScreen.equals("n")) {
+                System.out.println("Awwwww");
+                System.out.println("Well that's all I can do!");
+            }
+            else {
+                System.out.println("Invalid command! Please enter a valid command");
+            }
+            
+        }
+        
+        // The game sequence
+        // The player will be given a random three letter word that they have to guess
+        GAME:
+        while (game == true) {
+            Scanner input = new Scanner(System.in);
+            
+            // Creates the wrong letters list to show the player what letters they have already guessed that were incorrect
+            ArrayList<String> wrong_letters = new ArrayList<>();
+            // Shows what letters the player has guessed that is in the word
+            ArrayList<String> letters_guessed = new ArrayList<>();
+            letters_guessed.add("_");
+            letters_guessed.add("_");
+            letters_guessed.add("_");
+            
+            // Creates the secret word
+            String secret_word = words[rand.nextInt(words.length)];
+            // System.out.println(secret_word);
+            
+            // Transforms the secret word into a list
+            String[] strSplit = secret_word.split("");
+            ArrayList<String> letters_in_word = new ArrayList<String>(
+            Arrays.asList(strSplit));
+            
+            // Displays the letters guessed to the player
+            String word_guessed = "";
+            System.out.println(letters_guessed);
+            
+            // Looks to see if the player has guessed the word yet
+            // If they haven't, then continue allowing the player to guess
+            while(word_guessed.compareTo(secret_word) != 0) {
+                // What the player sees when they first make a guess
+                if (fails == 0) {
+                    System.out.println("====+   ");
+                    System.out.println("|       ");
+                    System.out.println("|       ");
+                    System.out.println("|       ");
+                    System.out.println("|       ");
+                    System.out.println("|_______");
+                }
+                // First word the player will guess
+                System.out.println("Guess a letter: ");
+                String letter = input.nextLine();
+                System.out.println(" ");
+                
+                // Checks if the word contains the letter
+                if (secret_word.contains(letter)) {
+                    // If it does, input the letter into the letters_guessed list
+                    int letter_location = letters_in_word.indexOf(letter);
+                    letters_guessed.set(letter_location, letter);
+                    System.out.println(letters_guessed);
+                    // TESTER: System.out.println(letters_in_word);
+                    
+                    // If the letterr guessed make up the secret word, then go to VICTORY_END scene
+                    if (letters_guessed.equals(letters_in_word)) {
+                        victory_end = true;
+                        game = false;
+                        break;
+                    }
+                }
+                // Decides the inputted character is not the word
+                else {
+                    System.out.println("Sorry, that was the wrong letter!");
+                    System.out.println(letters_guessed);
+                    // Adds a counter to the fails list
+                    // Once the player reaches 6 fails, they lose
+                    fails += 1;
+                    // What the player sees when they have made one mistake
+                    if (fails == 1) {
+                        System.out.println("====+   ");
+                        System.out.println("|   O   ");
+                        System.out.println("|       ");
+                        System.out.println("|       ");
+                        System.out.println("|       ");
+                        System.out.println("|_______");
+                    }
+                    // What the player sees when they have made two mistakes
+                    else if (fails == 2) {
+                        System.out.println("====+   ");
+                        System.out.println("|   O   ");
+                        System.out.println("|   |   ");
+                        System.out.println("|       ");
+                        System.out.println("|       ");
+                        System.out.println("|_______");
+                    }
+                    // What the player sees when they have made three mistakes
+                    else if (fails == 3) {
+                        System.out.println("====+   ");
+                        System.out.println("|   O   ");
+                        System.out.println("| --|   ");
+                        System.out.println("|       ");
+                        System.out.println("|       ");
+                        System.out.println("|_______");
+                    }
+                    // What the player sees when they have made four mistakes
+                    else if (fails == 4) {
+                        System.out.println("====+   ");
+                        System.out.println("|   O   ");
+                        System.out.println("| --|-- ");
+                        System.out.println("|       ");
+                        System.out.println("|       ");
+                        System.out.println("|_______");
+                    }
+                    // What the player sees when they have made five mistakes
+                    else if (fails == 5) {
+                        System.out.println("====+   ");
+                        System.out.println("|   O   ");
+                        System.out.println("| --|-- ");
+                        System.out.println("|  |    ");
+                        System.out.println("|       ");
+                        System.out.println("|_______");
+                    }
+                    // What the player sees when they have made six mistakes
+                    // Ends the GAME sequence
+                    else if (fails >= 6) {
+                        losing_end = true;
+                        game = false;
+                        System.out.println("====+   ");
+                        System.out.println("|   O   ");
+                        System.out.println("| --|-- ");
+                        System.out.println("|  | |  ");
+                        System.out.println("|       ");
+                        System.out.println("|_______");
+                        break;
+                    }
+                }
+                    
+                }
+            }
+        
+        // The sequence the player will see if they won
+        VICTORY_ENDING:
+        while (victory_end == true) {
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("You won!");
+            System.out.println("Congratulations!");
+            System.out.println("You're a winner!");
+            System.out.println("Come back and try again soon!");
+            // Just ends the code, no continues, no redous
+                    // Want to find a way to make it return to the INTRO sequence
+            String end = input.nextLine();
+        }
+        
+        // The sequence the player will see if they lost
+        LOSING_ENDING:
+        while (losing_end == true) {
+            Scanner input = new Scanner(System.in);
+            
+            System.out.println("You lost!");
+            System.out.println("You're a loser!");
+            System.out.println("So sad!");
+            System.out.println("Maybe you won't be so bad next time!");
+            // Just ends the code, no continues, no redous
+                    // Want to make it so the INTRO sequence can replay
+            String end = input.nextLine();
+        }
+        
+    }
+}
